@@ -20,7 +20,7 @@ use app\models\Upload;
 
     <div class="card-footer">
         <?php if ($_ENV['DOWNLOAD_PATH'] . $model->name == true) {
-            echo '<h5>Загруженый файл:&#160&#160</h5>', Html::a('<i class="fa fa-download"></i>' . '&#160' . $model->name, ['upload/download', 'id' => $model->id], [
+            echo '<h5>Загруженый файл:&#160&#160</h5>', Html::a($model->name, ['upload/download', 'id' => $model->id], [
                     'data' => [
                         'method' => 'post',
                     ],
