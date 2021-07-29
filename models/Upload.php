@@ -52,7 +52,7 @@ class Upload extends \yii\db\ActiveRecord
         return [
             [['type', 'user_id'], 'integer'],
             [['name', 'size', 'date'], 'string'],
-            [['file'], 'file', 'maxFiles' => 20, 'extensions' => 'docx, doc, pdf, xls, odt, ods, odp', 'maxSize' => '20000000']
+            [['file'], 'file', 'maxFiles' => 20, 'extensions' => 'docx, doc, pdf, xls, odt, ods, odp, rtf', 'maxSize' => '20000000']
         ];
     }
 

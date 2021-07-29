@@ -19,7 +19,7 @@ use app\models\Upload;
     <hr align="center" width="1130" size="2" color="#ff0000"/>
 
     <div class="card-footer">
-        <?php if ($model->getFilename() == true) {
+        <?php if ($_ENV['DOWNLOAD_PATH'] . $model->name == true) {
             echo '<h5>Загруженый файл:&#160&#160</h5>', Html::a('<i class="fa fa-download"></i>' . '&#160' . $model->name, ['upload/download', 'id' => $model->id], [
                     'data' => [
                         'method' => 'post',
@@ -32,7 +32,7 @@ use app\models\Upload;
                     ],
                 ]);
         } else {
-            Html::a($model->getFilename(), ['upload/delete', 'id' => $model->id], [
+            Html::a($_ENV['DOWNLOAD_PATH'] . $model->name, ['upload/delete', 'id' => $model->id], [
                 'data' => [
                     'method' => 'post',
                 ],

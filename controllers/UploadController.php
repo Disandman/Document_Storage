@@ -132,7 +132,7 @@ class UploadController extends Controller
                     $modelMulti->date = date("Y-m-d");
                     $modelMulti->size = number_format($file->size / 1048576, 3) . ' ' . 'MB';
                     $this->findModel($id)->delete();
-                    unlink($model->getFilename());
+                    unlink($_ENV['DOWNLOAD_PATH'] . $model->name);
                     $modelMulti->save(false);
                 }
 
