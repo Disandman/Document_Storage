@@ -7,3 +7,18 @@ services:
       - ./:/app:delegated
     ports:
       - '8000:80'
+
+  db: 
+    image: mysql:latest
+    environment: 
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - 'db:/var/lib/mysql'
+    ports: 
+      - '33062:3306'
+
+volumes:
+    db: { }
