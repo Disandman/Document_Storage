@@ -28,6 +28,14 @@ $config = [
             'identityClass' => '\dektrium\user\models\User',
             'enableAutoLogin' => true,
         ],
+        'as access' => [
+            'class' => \dektrium\user\filters\AccessRule::className(),
+            'allowActions' => [
+                'site/error',
+                'api/*',
+                '/'
+            ]
+        ],
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
