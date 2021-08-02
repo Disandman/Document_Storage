@@ -93,10 +93,13 @@ class UploadSearch extends Upload
         if ($this->date != '') {
             $date = explode(' - ', $this->date);
 
-            $query->andWhere(['>=', 'date', date('Y-m-d', strtotime($date[0]))]);
-            $query->andWhere(['<=', 'date', date('Y-m-d', strtotime($date[1]))]);
+            if (empty ($date)) {
+                $query->andWhere(['>=', 'date', date('Y-m-d', strtotime($date[0]))]);
+                $query->andWhere(['<=', 'date', date('Y-m-d', strtotime($date[1]))]);
+            } else {
+                $query->andWhere('date >= DATE_SUB(CURRENT_DATE, INTERVAL 5 YEAR)');
+            }
         }
-
         return $dataProvider;
     }
 }
