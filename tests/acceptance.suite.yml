@@ -1,0 +1,11 @@
+class_name: AcceptanceTester
+modules:
+    enabled:
+        - WebDriver:
+            url: http://test.ru:80/
+            browser: firefox
+        - Yii2:
+            part: orm
+            entryScript: index-test.php
+            transaction: false # don't wrap test in transaction
+            cleanup: false

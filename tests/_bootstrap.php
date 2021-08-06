@@ -1,4 +1,8 @@
 <?php
+
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
+
 define('YII_ENV', 'test');
 defined('YII_DEBUG') or define('YII_DEBUG', true);
 
