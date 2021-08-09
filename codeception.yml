@@ -12,6 +12,8 @@ modules:
     config:
         Yii2:
             configFile: 'config/test.php'
+params:
+    - .env
 
 # To enable code coverage:
 #coverage:

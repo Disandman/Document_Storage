@@ -40,24 +40,24 @@ $config = [
             'errorAction' => 'site/error',
         ],
         'mailer' => [
-        'class' => 'yii\swiftmailer\Mailer',
-        'viewPath' => '@app/mailer',
-        'useFileTransport' => false,
-        'transport' => [
-            'class' => 'Swift_SmtpTransport',
-            'host' => $_ENV['HOST_DOMAINS'],
-            'username' => $_ENV['USERNAME_MAIL'],
-            'password' => $_ENV['PASSWORD_MAIL'],
-            'port' => $_ENV['PORT_MAIL'],
-            'encryption' => $_ENV['ENCRYPTION_MAIL'],
-            'streamOptions' => [
-            'ssl' => [
-                'verify_peer' => false,
-                'allow_self_signed' => false
+            'class' => 'yii\swiftmailer\Mailer',
+            'viewPath' => '@app/mailer',
+            'useFileTransport' => false,
+            'transport' => [
+                'class' => 'Swift_SmtpTransport',
+                'host' => $_ENV['HOST_DOMAINS'],
+                'username' => $_ENV['USERNAME_MAIL'],
+                'password' => $_ENV['PASSWORD_MAIL'],
+                'port' => $_ENV['PORT_MAIL'],
+                'encryption' => $_ENV['ENCRYPTION_MAIL'],
+                'streamOptions' => [
+                    'ssl' => [
+                        'verify_peer' => false,
+                        'allow_self_signed' => false
+                    ],
+                ],
             ],
         ],
-        ],
-    ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
@@ -79,8 +79,7 @@ $config = [
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
-            ],
+            'rules' => [],
         ],
     ],
     'modules' => [
@@ -93,12 +92,12 @@ $config = [
         ],
         'rbac' => 'dektrium\rbac\RbacWebModule',
         'mailer' => [
-        'sender'                => 'mail@projectsil.ru',
-        'welcomeSubject'        => 'Welcome subject',
-        'confirmationSubject'   => 'Confirmation subject',
-        'reconfirmationSubject' => 'Email change subject',
-        'recoverySubject'       => 'Recovery subject',
-],
+            'sender'                => 'mail@projectsil.ru',
+            'welcomeSubject'        => 'Welcome subject',
+            'confirmationSubject'   => 'Confirmation subject',
+            'reconfirmationSubject' => 'Email change subject',
+            'recoverySubject'       => 'Recovery subject',
+        ],
 
     ],
     'params' => $params,
