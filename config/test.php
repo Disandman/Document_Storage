@@ -38,5 +38,23 @@ return [
             */
         ],
     ],
+    'modules' => [
+        'user' => [
+            'class' => 'dektrium\user\Module',
+            'enableUnconfirmedLogin' => true,
+            'confirmWithin' => 21600,
+            'cost' => 12,
+            'admins' => ['admin']
+        ],
+        'rbac' => 'dektrium\rbac\RbacWebModule',
+        'mailer' => [
+            'sender'                => 'mail@projectsil.ru',
+            'welcomeSubject'        => 'Welcome subject',
+            'confirmationSubject'   => 'Confirmation subject',
+            'reconfirmationSubject' => 'Email change subject',
+            'recoverySubject'       => 'Recovery subject',
+        ],
+
+    ],
     'params' => $params,
 ];
