@@ -36,7 +36,8 @@
         "kartik-v/yii2-date-range": "dev-master",
         "kartik-v/yii2-widget-datepicker": "dev-master",
         "miloschuman/yii2-highcharts-widget": "^8.0",
-        "vlucas/phpdotenv": "dev-master"
+        "vlucas/phpdotenv": "dev-master",
+        "codeception/module-webdriver": "dev-master"
     },
     "config": {
         "process-timeout": 1800,

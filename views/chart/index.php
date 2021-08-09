@@ -17,22 +17,22 @@ use kartik\date\DatePicker;
     <thead class="thead-dark">
     <tr>
         <th scope="row"></th>
-        <? foreach (Upload::$intervalNames as $intervalName) : ?>
+        <?php foreach (Upload::$intervalNames as $intervalName) : ?>
             <th scope="col"><?=$intervalName ?></th>
-        <? endforeach; ?>
+        <?php endforeach; ?>
     </tr>
     </thead>
     <tbody>
-    <? foreach (Upload::$typeNames as $typeCode => $typeName) : ?>
+    <?php foreach (Upload::$typeNames as $typeCode => $typeName) : ?>
         <tr>
             <th scope="row"><?=$typeName ?></th>
-            <? foreach (Upload::$intervalNames as $intervalCode => $intervalName) : ?>
+            <?php foreach (Upload::$intervalNames as $intervalCode => $intervalName) : ?>
                 <td>
                     <?=Upload::countFilesByPeriodAndType($intervalCode, $typeCode) ?>
                 </td>
-            <? endforeach; ?>
+            <?php endforeach; ?>
         </tr>
-    <? endforeach; ?>
+    <?php endforeach; ?>
     </tbody>
 </table>
 </div>
