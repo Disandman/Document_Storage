@@ -97,15 +97,14 @@ class ApiController extends BaseApiController
         return "success";
 
     }
-    
+
     public function actionDelete($id)
     {
         $modelDel = $this->findModel($id);
-        $model = $this->findModel($id);
         if (!$_ENV['DOWNLOAD_PATH'] . $modelDel->name) {
             unlink($_ENV['DOWNLOAD_PATH'] . $modelDel->name);
         }
         $this->findModel($id)->delete();
-        return $this->redirect(['index']);
+        return "success delete";
     }
 }
