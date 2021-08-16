@@ -13,24 +13,6 @@ class ApiController extends BaseApiController
 {
     public $modelClass = ApiModel::class;
 
-    public function behaviors()
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'index' => ['get'],
-                    'view' => ['get'],
-                    'createnew' => ['post'],
-                    'update' => ['put'],
-                    'delete' => ['delete'],
-                    'deleteall' => ['post'],
-                    'search' => ['get']
-                ],
-
-            ]
-        ];
-    }
     public function actionCreatenew()
     {
         $model = new Upload();
@@ -42,7 +24,7 @@ class ApiController extends BaseApiController
                     $file->saveAs($_ENV['DOWNLOAD_PATH'] . $file->name);
                     $modelMulti->name = $file->name;
                     $modelMulti->type = $model->type;
-                    $modelMulti->user_id = Yii::$app->user->id;
+                    $modelMulti->user_id = \Yii::$app->user->id;
                     $modelMulti->date = date("Y-m-d");
                     $modelMulti->size = number_format($file->size / 1048576, 3) . ' ' . 'MB';
                     $modelMulti->save(false);
