@@ -6,7 +6,6 @@ use app\components\BaseApiController;
 use app\models\Upload;
 use app\modules\v1\models\ApiModel;
 use yii\data\ActiveDataProvider;
-use yii\filters\VerbFilter;
 use yii\web\UploadedFile;
 
 
@@ -14,12 +13,7 @@ class ApiController extends BaseApiController
 {
     public $modelClass = ApiModel::class;
 
-    public function actions()
-    {
-        $actions = parent::actions();
-        unset($actions['create']);
-        return $actions;
-    }
+
 
     public function actionCreate()
     {
