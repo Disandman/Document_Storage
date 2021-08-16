@@ -13,7 +13,12 @@ class ApiController extends BaseApiController
 {
     public $modelClass = ApiModel::class;
 
-
+    public function actions()
+    {
+        $actions = parent::actions();
+        unset($actions['create']);
+        return $actions;
+    }
 
     public function actionCreate()
     {
