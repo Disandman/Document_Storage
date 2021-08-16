@@ -74,7 +74,8 @@ class ApiController extends BaseApiController
 
     public function actionUpdate($id)
 
-    {    $modelDel = $this->findModel($id);
+    {
+        $modelDel = $this->findModel($id);
         \Yii::$app->request->getBodyParams();
         $uploads = \yii\web\UploadedFile::getInstancesByName('file');
         if (empty($uploads)) {
@@ -96,10 +97,10 @@ class ApiController extends BaseApiController
         return "success";
 
     }
-
-
+    
     public function actionDelete($id)
-    {   $modelDel = $this->findModel($id);
+    {
+        $modelDel = $this->findModel($id);
         $model = $this->findModel($id);
         if (!$_ENV['DOWNLOAD_PATH'] . $modelDel->name) {
             unlink($_ENV['DOWNLOAD_PATH'] . $modelDel->name);
