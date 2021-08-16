@@ -30,7 +30,7 @@ class ApiController extends BaseApiController
         $path = $_ENV['DOWNLOAD_PATH'];
         $savedfiles = [];
         foreach ($uploads as $upload) {
-            $filename = $path . time() . '_' . $upload->name;
+            $filename = $path . $upload->name;
             $upload->saveAs($filename);
             $model = new $this->modelClass;
             $model->name = $upload->name;
