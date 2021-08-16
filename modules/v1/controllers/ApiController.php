@@ -20,7 +20,6 @@ class ApiController extends BaseApiController
         return $actions;
     }
 
-
     public function actionCreate()
     {
         $uploads = \yii\web\UploadedFile::getInstancesByName('file');
