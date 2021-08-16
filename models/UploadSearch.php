@@ -13,6 +13,17 @@ use yii\data\ActiveDataProvider;
 class UploadSearch extends Upload
 {
 
+    public function validateDate($attribute, $param)
+    {
+        if(!empty($this->$attribute)) { // проверка на заполнение. Если не заполняли, считаем, что всё ок
+
+            $date = explode(' - ', $this->$attribute); // разбиваем содержимое атрибута
+
+            if(!isset($date[0]) || !isset($date[1])) { //проверяем, что интервал передан корректно
+                $this->addError($attribute, 'Неверный формат интервала дат'); // Если некорректно - добавляем ошибку
+            }
+        }
+    }
 
     /**
      * {@inheritdoc}
@@ -22,6 +33,7 @@ class UploadSearch extends Upload
         return [
             [['id', 'type'], 'integer'],
             [['name', 'size', 'user_id', 'date'], 'safe'],
+            ['date', 'validateDate'],
         ];
     }
 
@@ -93,12 +105,8 @@ class UploadSearch extends Upload
         if ($this->date != '') {
             $date = explode(' - ', $this->date);
 
-            if (empty ($date)) {
-                $query->andWhere(['>=', 'date', date('Y-m-d', strtotime($date[0]))]);
-                $query->andWhere(['<=', 'date', date('Y-m-d', strtotime($date[1]))]);
-            } else {
-                $query->andWhere('date >= DATE_SUB(CURRENT_DATE, INTERVAL 5 YEAR)');
-            }
+            $query->andWhere(['>=', 'date', date('Y-m-d', strtotime($date[0]))]);
+            $query->andWhere(['<=', 'date', date('Y-m-d', strtotime($date[1]))]);
         }
         return $dataProvider;
     }
