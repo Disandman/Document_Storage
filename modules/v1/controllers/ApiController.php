@@ -20,23 +20,26 @@ class ApiController extends BaseApiController
         return $actions;
     }
 
+
     public function actionCreate()
     {
         $uploads = \yii\web\UploadedFile::getInstancesByName('file');
         if (empty($uploads)) {
-            return false;
+            return "Failure";
         }
-        $path = $_ENV['DOWNLOAD_PATH']; // set your path
+        $path = $_ENV['DOWNLOAD_PATH'];
+        $savedfiles = [];
         foreach ($uploads as $upload) {
             $filename = $path . time() . '_' . $upload->name;
             $upload->saveAs($filename);
             $model = new $this->modelClass;
             $model->name = $upload->name;
+            $model->type = 0;
             $model->date = date("Y-m-d");
             $model->size = number_format($upload->size / 1048576, 3) . ' ' . 'MB';
             $model->save();
         }
-        return true;
+        return "success";
 
     }
 }
