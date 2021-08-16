@@ -37,10 +37,8 @@ class BaseApiController extends ActiveController
                 'actions' => [
                     'index' => ['get'],
                     'view' => ['get'],
-                    'createnew' => ['post'],
                     'update' => ['put'],
                     'delete' => ['delete'],
-                    'deleteall' => ['post'],
                     'search' => ['get']
                 ],
                 ]
