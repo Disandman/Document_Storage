@@ -1,3 +1,25 @@
+# Ревью от 17.08.2021
+
+## Тесты
+
+...
+
+## API
+
+### Именование модуля и построение ссылок
+
+Мдуль для API лучше так и назвать - api. А внутри него уже можно сделать разные версии - v1, v2...
+
+Т.о. api будет доступен по ссылкам вида:
+
+```
+https://site.com/api/v1/uploads
+https://site.com/api/v1/users
+...
+```
+
+Набросала структуру в modules для примера.
+
 <p align="center">
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
