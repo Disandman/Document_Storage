@@ -105,6 +105,9 @@ $config = [
         ],
     ],
     'modules' => [
+        'apiV1' => [
+            'class' => 'app\modules\api\v1\Module',
+        ],
         'v1' => [
             'basePath' => '@app/modules/v1',
             'class' => 'app\modules\v1\Module'
