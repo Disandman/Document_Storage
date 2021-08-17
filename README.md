@@ -79,6 +79,10 @@ public static function getPathToFile(string $name): string {
 
 Если есть проблема с английским, пишите коммиты на русском. В 80% случаев код в российских компаниях остаётся в России, так что можно с этим не заморачиваться. 
 
+### Конфигурации
+
+clientId и clientSecret для гитлаба тоже лучше спрятать в .env
+
 
 <p align="center">
     <a href="https://github.com/yiisoft" target="_blank">
