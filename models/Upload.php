@@ -93,4 +93,13 @@ class Upload extends \yii\db\ActiveRecord
         $result = $query->andWhere('date >= DATE_SUB(CURRENT_DATE, INTERVAL ' . $interval . ')')->scalar();
         return empty($result) ? 0 : intval($result);
     }
+    /**
+     * Возвращает путь к файлу
+     *
+     * @param string $name
+     * @return string
+     * */
+    public static function getPathToFile(string $name): string {
+        return $_ENV['DOWNLOAD_PATH'] . $name;
+    }
 }

@@ -19,8 +19,8 @@ $config = [
             'clients' => [
                 'github' => [
                     'class' => 'dektrium\user\clients\GitHub',
-                    'clientId' => 'b5223a80223b92f73d82',
-                    'clientSecret' => '1fe2d15b478294b793cabcacda4b086c82644214',
+                    'clientId' => $_ENV['GITHUB_ID'],
+                    'clientSecret' => $_ENV['GITHUB_SECRET'],
                 ],
             ],
         ],
@@ -98,16 +98,16 @@ $config = [
             'rules' => [
                 [
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => ['v1/upload_api' =>'v1/api'],
+                    'controller' => 'api_v1/upload',
                     'pluralize' => false,
                 ],
             ],
         ],
     ],
     'modules' => [
-        'v1' => [
-            'basePath' => '@app/modules/v1',
-            'class' => 'app\modules\v1\Module'
+        'api_v1' => [
+            'basePath' => '@app/modules/api/v1',
+            'class' => 'app\modules\api\v1\Module'
         ],
         'user' => [
             'class' => 'dektrium\user\Module',

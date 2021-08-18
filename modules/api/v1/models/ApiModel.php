@@ -1,12 +1,12 @@
 <?php
 
-namespace app\modules\v1\models;
+namespace app\modules\api\v1\models;
 
 
 use app\models\Upload;
 use yii\helpers\Url;
 use yii\web\Linkable;
-class ApiModel  extends Upload implements Linkable
+class ApiModel  extends Upload
 {
     public function fields()
     {
@@ -21,7 +21,7 @@ class ApiModel  extends Upload implements Linkable
     public function getLinks()
     {
         return [
-            'viewlink' => Url::to(['upload/view', 'id' => $this->id], true),
+            'viewlink' => Url::to(['/upload/view', 'id' => $this->id], true),
         ];
     }
 }

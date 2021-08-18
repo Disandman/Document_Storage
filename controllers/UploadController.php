@@ -64,6 +64,7 @@ class UploadController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return mixed
      */
+
     public function actionCreate()
     {
         $model = new Upload();
@@ -72,29 +73,26 @@ class UploadController extends Controller
             if ($model->file = UploadedFile::getInstances($model, 'file')) {
                 foreach ($model->file as $file) {
                     $modelMulti = new Upload();
-                    $file->saveAs($_ENV['DOWNLOAD_PATH'] . $file->name);
+                    $file->saveAs(Upload::getPathToFile($file));
                     $modelMulti->name = $file->name;
                     $modelMulti->type = $model->type;
                     $modelMulti->user_id = Yii::$app->user->id;
                     $modelMulti->date = date("Y-m-d");
                     $modelMulti->size = number_format($file->size / 1048576, 3) . ' ' . 'MB';
-                    $modelMulti->save(false);
+                    $modelMulti->save();
                 }
-
             }
             return $this->redirect(['index']);
         }
-
         return $this->render('create', [
             'model' => $model,
-
         ]);
     }
 
     public function actionDownload($id)
     {
         $model = $this->findModel($id);
-        return \Yii::$app->response->sendFile($_ENV['DOWNLOAD_PATH'] . $model->name);
+        return \Yii::$app->response->sendFile(Upload::getPathToFile($this->findModel($id)->name));
 
     }
 
@@ -111,7 +109,7 @@ class UploadController extends Controller
     {
         $model = $this->findModel($id);
         if (!$_ENV['DOWNLOAD_PATH'] . $model->name) {
-            unlink($_ENV['DOWNLOAD_PATH'] . $model->name);
+            unlink(Upload::getPathToFile($this->findModel($id)->name));
         }
         $this->findModel($id)->delete();
         return $this->redirect(['index']);
@@ -124,23 +122,19 @@ class UploadController extends Controller
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             if ($model->file = UploadedFile::getInstances($model, 'file')) {
                 foreach ($model->file as $file) {
-                    $modelMulti = new Upload();
-                    $file->saveAs($_ENV['DOWNLOAD_PATH'] . $file->name);
+                    $modelMulti = $this->findModel($id);
+                    $file->saveAs(Upload::getPathToFile($file));
                     $modelMulti->name = $file->name;
                     $modelMulti->type = $model->type;
                     $modelMulti->user_id = Yii::$app->user->id;
                     $modelMulti->date = date("Y-m-d");
                     $modelMulti->size = number_format($file->size / 1048576, 3) . ' ' . 'MB';
-                    $this->findModel($id)->delete();
-                    unlink($_ENV['DOWNLOAD_PATH'] . $model->name);
-                    $modelMulti->save(false);
+                    unlink(Upload::getPathToFile($this->findModel($id)->name));
+                    $modelMulti->save();
                 }
-
             }
-
             return $this->redirect(['index']);
         }
-
         return $this->render('update', [
             'model' => $model,
         ]);

@@ -1,6 +1,6 @@
 <?php
 
-namespace app\components;
+namespace app\modules\api\v1\controllers;
 
 use yii\filters\VerbFilter;
 use yii\rest\ActiveController;
@@ -32,16 +32,6 @@ class BaseApiController extends ActiveController
                     'xml' => \yii\web\Response::FORMAT_XML
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'index' => ['get'],
-                    'view' => ['get'],
-                    'update' => ['put'],
-                    'delete' => ['delete'],
-                    'search' => ['get']
-                ],
-                ]
         ];
     }
 }
