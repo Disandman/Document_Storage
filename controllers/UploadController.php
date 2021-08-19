@@ -73,7 +73,9 @@ class UploadController extends Controller
             if ($model->file = UploadedFile::getInstances($model, 'file')) {
                 foreach ($model->file as $file) {
                     $modelMulti = new Upload();
-                    $file->saveAs(Upload::getPathToFile($file));
+                    // Это вызовет ошибку или неожиданный результат, потому что $file - это объект
+                    // $file->saveAs(Upload::getPathToFile($file));
+                    $file->saveAs(Upload::getPathToFile($file->name));
                     $modelMulti->name = $file->name;
                     $modelMulti->type = $model->type;
                     $modelMulti->user_id = Yii::$app->user->id;
@@ -92,8 +94,9 @@ class UploadController extends Controller
     public function actionDownload($id)
     {
         $model = $this->findModel($id);
-        return \Yii::$app->response->sendFile(Upload::getPathToFile($this->findModel($id)->name));
-
+        // Можно воспользоваться переменной $model
+        // return \Yii::$app->response->sendFile(Upload::getPathToFile($this->findModel($id)->name));
+        return \Yii::$app->response->sendFile(Upload::getPathToFile($model->name));
     }
 
     /**
