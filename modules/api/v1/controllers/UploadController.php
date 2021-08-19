@@ -53,9 +53,9 @@ class UploadController extends BaseApiController
             $model->size = number_format($upload->size / 1048576, 3) . ' ' . 'MB';
             unlink(Upload::getPathToFile($this->findModel($id)->name));
             $model->save();
-            return array('status' => 'A new object has been added.', 'data' => $model);
+            return array('status' => 'The object has been updated.', 'data' => $model);
         }
-        throw new ServerErrorHttpException('Failed to add object for unknown reason.');
+        throw new ServerErrorHttpException('Failed to update the object for an unknown reason..');
     }
 //////////////////////////////////Удаление объекта/////////////////////////////////////////////
     public function actionDelete($id)
