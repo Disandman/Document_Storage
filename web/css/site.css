@@ -1,3 +1,4 @@
+
 main > .container {
     padding: 20px 15px 20px;
 }
@@ -63,7 +64,14 @@ a.desc:after {
     padding-top: 7px;
     color: rgba(255, 255, 255, 0.5);
 }
+.one_third {
+    float: left;
+    min-width: 11rem;
+}
 
+.wrapper {
+    min-width: 11rem;
+}
 @media(max-width:767px) {
     .nav li > form > button.logout {
         display:block;
