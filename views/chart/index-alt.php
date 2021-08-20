@@ -27,7 +27,6 @@ $this->params['breadcrumbs'][] = $this->title;
         'action' => \yii\helpers\Url::to(['index-alt'])
     ]);
 
-
     echo $form->field($model, 'date')->widget(DateRangePicker::classname(), [
         'convertFormat' => true,
         'presetDropdown' => true,
@@ -88,16 +87,13 @@ $this->params['breadcrumbs'][] = $this->title;
                 ],
             ],
         ]);
-    }
-
-    elseif(empty($modelCounter->getCountTotal())) {
+    } elseif (empty($modelCounter->getCountTotal())) {
         echo \yii\bootstrap4\Alert::widget([
             'options' => [
                 'class' => 'alert-warning',
             ],
             'body' => 'Нет информации удовлетворяющей поиску... (попробуйте ввести другие интервалы времени)',
         ]);
-
     }
     echo $this->render('index', ['model' => $model]);
     ?>

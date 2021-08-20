@@ -6,7 +6,7 @@ namespace app\modules\api\v1\models;
 use app\models\Upload;
 use yii\helpers\Url;
 use yii\web\Linkable;
-class ApiModel  extends Upload
+class ApiModel  extends Upload implements Linkable
 {
     public function fields()
     {

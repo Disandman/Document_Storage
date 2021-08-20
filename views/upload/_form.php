@@ -19,9 +19,7 @@ use app\models\Upload;
 
     <?php echo $form->field($model, 'file')->widget(FileInput::classname(), [
         'language' => 'ru',
-        'options' => ['multiple' => true,],
-
-
+        'options' => ['multiple' => true,]
     ]); ?>
 
     <div class="form-group">

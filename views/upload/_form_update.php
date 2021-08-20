@@ -15,7 +15,6 @@ use app\models\Upload;
 
     <?php echo $form->field($model, 'type')->dropDownList(Upload::$typeNames); ?>
 
-
     <hr align="center" width="1130" size="2" color="#ff0000"/>
 
     <div class="card-footer">
@@ -37,7 +36,8 @@ use app\models\Upload;
                     'method' => 'post',
                 ],
             ]);
-        } ?>
+        }
+        ?>
     </div>
 
     <hr align="center" width="1130" size="2" color="#ff0000"/>

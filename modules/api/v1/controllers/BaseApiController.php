@@ -15,14 +15,16 @@ class BaseApiController extends ActiveController
         'collectionEnvelope' => 'items',
     ];
 
-    public function checkAccess($action, $model=null, $params=[]) {
+    public function checkAccess($action, $model = null, $params = [])
+    {
         return true;
     }
 
     /**
      * @return array
      */
-    public function behaviors() {
+    public function behaviors()
+    {
         return [
             'contentNegotiator' => [
                 'class' => \yii\filters\ContentNegotiator::class,

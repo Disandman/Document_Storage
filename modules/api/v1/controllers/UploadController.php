@@ -23,6 +23,7 @@ class UploadController extends BaseApiController
         unset($actions['delete']);
         return $actions;
     }
+
 //////////////////////////////////Добавление нового объекта////////////////////////////////
     public function actionCreate()
     {
@@ -35,10 +36,11 @@ class UploadController extends BaseApiController
             $model->date = date("Y-m-d");
             $model->size = number_format($upload->size / 1048576, 3) . ' ' . 'MB';
             $model->save();
-        return array('status' => 'A new object has been added.', 'data' => $model);
+            return array('status' => 'A new object has been added.', 'data' => $model);
         }
         throw new ServerErrorHttpException('Failed to add object for unknown reason.');
     }
+
 //////////////////////////////////Изменение существующего объекта////////////////////////////////
     public function actionUpdate($id)
     {
@@ -51,18 +53,24 @@ class UploadController extends BaseApiController
             $model->type = 0;
             $model->date = date("Y-m-d");
             $model->size = number_format($upload->size / 1048576, 3) . ' ' . 'MB';
-            unlink(Upload::getPathToFile($this->findModel($id)->name));
+            if (!Upload::getPathToFile($this->findModel($id)->name)) {
+                unlink(Upload::getPathToFile($this->findModel($id)->name));
+            }
             $model->save();
-            return array('status' => 'The object has been updated.', 'data' => $model);
+            return array('status' => 'A new object has been added.', 'data' => $model);
         }
-        throw new ServerErrorHttpException('Failed to update the object for an unknown reason..');
+        throw new ServerErrorHttpException('Failed to add object for unknown reason.');
     }
+
 //////////////////////////////////Удаление объекта/////////////////////////////////////////////
     public function actionDelete($id)
     {
-        unlink(Upload::getPathToFile($this->findModel($id)->name));
+        if (!Upload::getPathToFile($this->findModel($id)->name)) {
+            unlink(Upload::getPathToFile($this->findModel($id)->name));
+        }
         return false !== $this->findModel($id)->delete();
     }
+
 ///////////////////////////////////Функция поиска объекта//////////////////////////////////////
     public function findModel($id)
     {

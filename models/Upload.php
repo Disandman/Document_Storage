@@ -52,7 +52,7 @@ class Upload extends \yii\db\ActiveRecord
         return [
             [['type', 'user_id'], 'integer'],
             [['name', 'size', 'date'], 'string'],
-            [['file'], 'file', 'maxFiles' => 20, 'extensions' => 'docx, doc, pdf, xls, odt, ods, odp, rtf', 'maxSize' => '20000000']
+            [['file'], 'file', 'maxFiles' => 20, 'extensions' => 'docx, doc, pdf, xls, odt, ods, odp, rtf, txt', 'maxSize' => '20000000']
         ];
     }
 
@@ -93,13 +93,15 @@ class Upload extends \yii\db\ActiveRecord
         $result = $query->andWhere('date >= DATE_SUB(CURRENT_DATE, INTERVAL ' . $interval . ')')->scalar();
         return empty($result) ? 0 : intval($result);
     }
+
     /**
      * Возвращает путь к файлу
      *
      * @param string $name
      * @return string
      * */
-    public static function getPathToFile(string $name): string {
+    public static function getPathToFile(string $name): string
+    {
         return $_ENV['DOWNLOAD_PATH'] . $name;
     }
 }

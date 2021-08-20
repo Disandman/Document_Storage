@@ -5,6 +5,7 @@ namespace app\controllers;
 use Yii;
 use app\models\Upload;
 use app\models\UploadSearch;
+use yii\data\Pagination;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
@@ -39,10 +40,17 @@ class UploadController extends Controller
     {
         $searchModel = new UploadSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-
+        $dataProvider->pagination->pageSize=24;
+        $query = Upload::find();
+        $pages = new Pagination(['totalCount' => $query->count()]);
+        $upload = $query->offset($pages->offset)
+            ->limit($pages->limit)
+            ->all();
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
+            'pages' => $pages,
+            'upload' =>$upload
         ]);
     }
 
@@ -108,9 +116,8 @@ class UploadController extends Controller
     public function actionDelete($id)
     {
         $model = $this->findModel($id);
-        if (!$_ENV['DOWNLOAD_PATH'] . $model->name) {
-            unlink(Upload::getPathToFile($this->findModel($id)->name));
-        }
+        if(!Upload::getPathToFile($this->findModel($id)->name)){
+            unlink(Upload::getPathToFile($this->findModel($id)->name));}
         $this->findModel($id)->delete();
         return $this->redirect(['index']);
     }
@@ -129,7 +136,8 @@ class UploadController extends Controller
                     $modelMulti->user_id = Yii::$app->user->id;
                     $modelMulti->date = date("Y-m-d");
                     $modelMulti->size = number_format($file->size / 1048576, 3) . ' ' . 'MB';
-                    unlink(Upload::getPathToFile($this->findModel($id)->name));
+                    if(!Upload::getPathToFile($this->findModel($id)->name)){
+                        unlink(Upload::getPathToFile($this->findModel($id)->name));}
                     $modelMulti->save();
                 }
             }

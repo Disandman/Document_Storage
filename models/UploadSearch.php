@@ -15,11 +15,11 @@ class UploadSearch extends Upload
 
     public function validateDate($attribute, $param)
     {
-        if(!empty($this->$attribute)) { // проверка на заполнение. Если не заполняли, считаем, что всё ок
+        if (!empty($this->$attribute)) { // проверка на заполнение. Если не заполняли, считаем, что всё ок
 
             $date = explode(' - ', $this->$attribute); // разбиваем содержимое атрибута
 
-            if(!isset($date[0]) || !isset($date[1])) { //проверяем, что интервал передан корректно
+            if (!isset($date[0]) || !isset($date[1])) { //проверяем, что интервал передан корректно
                 $this->addError($attribute, 'Неверный формат интервала дат'); // Если некорректно - добавляем ошибку
             }
         }
