@@ -87,6 +87,17 @@ If the target file `$file` already exists, it will be overwritten.
 
 Если в эту функцию "кинуть" не int, она PHP ругнется на несоответствие типов.
 
+4. Авторизация через гитхаб
+
+При регистрации выбивает ошибку mysql вида:
+
+```
+SQLSTATE[HY000]: General error: 1364 Field 'password_hash' doesn't have a default value
+The SQL being executed was: INSERT INTO `user` (`username`, `email`, `auth_key`, `registration_ip`, `created_at`, `updated_at`) VALUES ('annkirilenko', 'ann.kirilenko.18@gmail.com', 'QEmWQy58ZFVoTikxLJLaNDKosLECcZmz', '195.16.32.147', 1629447680, 1629447680)
+```
+
+Если исправить, то работает.
+
 
 <p align="center">
     <a href="https://github.com/yiisoft" target="_blank">
