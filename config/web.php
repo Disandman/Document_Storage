@@ -98,8 +98,9 @@ $config = [
             'rules' => [
                 [
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => 'api_v1/upload',
+                    'controller' => ['upload' => 'api_v1/upload'],
                     'pluralize' => false,
+                    'prefix' => 'api/v1'
                 ],
             ],
         ],
