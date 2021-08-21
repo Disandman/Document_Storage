@@ -1,17 +1,13 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
-use app\models\Upload;
 
 /* @var $this yii\web\View */
-/* @var $pages app\controllers\UploadController */
 /* @var $searchModel app\models\UploadSearch */
-/* @var $dataProvider yii\data\ActiveDataProvider */
+/** @var yii\data\ActiveDataProvider $dataProvider  */
 
 $this->title = 'Файлы';
 $this->params['breadcrumbs'][] = $this->title;
-$model = new \app\models\UploadSearch();
 ?>
 
 <body onload="showLoader()">
@@ -25,7 +21,8 @@ $model = new \app\models\UploadSearch();
                     <h3><?= Html::encode($this->title) ?></h3>
                 </div>
                 <?= \yii\bootstrap4\LinkPager::widget([
-                    'pagination' => $pages,
+                    'pagination' => $dataProvider->pagination, // Вот тут берем пагинацию из провайдера
+                    'hideOnSinglePage' => false // отключаем автоскрытие виджета, если страниц меньше двух
                 ]);
                 ?>
                 <div class="col text-right">

@@ -40,17 +40,25 @@ class UploadController extends Controller
     {
         $searchModel = new UploadSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
+
+        /**
+         * Эта пагинация работать не будет, т.к. отвязана от модели UploadSearch.
+         * Под капотом у ActiveDataProvider уже используется пагинация Pagination, 
+         * достаточно сделать prepare и вытащить её из $dataProvider во вьюхе
+         */
         $dataProvider->pagination->pageSize=24;
-        $query = Upload::find();
-        $pages = new Pagination(['totalCount' => $query->count()]);
-        $upload = $query->offset($pages->offset)
-            ->limit($pages->limit)
-            ->all();
+        // Вот эта строка обязательна, если хотим получить верное число страниц (https://www.yiiframework.com/doc/api/2.0/yii-data-basedataprovider#getPagination()-detail)
+        $dataProvider->prepare(); 
+        // $query = Upload::find();
+        // $pages = new Pagination(['totalCount' => $query->count()]);
+        // $upload = $query->offset($pages->offset)
+        //     ->limit($pages->limit)
+        //     ->all();
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'pages' => $pages,
-            'upload' =>$upload
+            // 'pagination' => $pages,
+            // 'upload' =>$upload
         ]);
     }
 
