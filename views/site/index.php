@@ -54,7 +54,7 @@ $this->title = 'Требования';
             </ul>
             <ul class="list-group list-group-flush text-left">
                 <li class="list-group-item">&#9675; Дополнительно реализовано Rest API. Точка входа-> <a
-                            href="https://projectsil.ru/api/v1/upload">https://projectsil.ru/api/v1/upload</a></li>
+                            href="https://projectsil.ru/api_v1/upload">https://projectsil.ru/api_v1/upload</a></li>
             </ul>
             <ul class="list-group list-group-flush text-left">
                 <li class="list-group-item">&#9675; Дополнительно реализована регистрация через свой почтовый сервер. <a

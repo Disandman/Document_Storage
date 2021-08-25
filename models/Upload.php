@@ -9,7 +9,6 @@ namespace app\models;
  * @property int $user_id
  * @property int $role
  * @property string|null $name
- *  * @property string|null $unique_name
  * @property string|null $size
  * @property int|null $type
  * @property string|null $date
@@ -38,7 +37,7 @@ class Upload extends \yii\db\ActiveRecord
         self::INTERVAL_YEAR_5 => '5 лет',
     ];
 
-    public static function tableName(): string
+    public static function tableName()
     {
         return 'upload';
     }
@@ -52,7 +51,7 @@ class Upload extends \yii\db\ActiveRecord
     {
         return [
             [['type', 'user_id'], 'integer'],
-            [['name', 'size', 'date', 'unique_name'], 'string'],
+            [['name', 'size', 'date'], 'string'],
             [['file'], 'file', 'maxFiles' => 20, 'extensions' => 'docx, doc, pdf, xls, odt, ods, odp, rtf, txt', 'maxSize' => '20000000']
         ];
     }
@@ -60,7 +59,7 @@ class Upload extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels(): array
+    public function attributeLabels()
     {
         return [
             'id' => 'ID',
@@ -72,33 +71,25 @@ class Upload extends \yii\db\ActiveRecord
             'type' => 'Тип документа',
             'date' => 'Дата создания файла',
             'role' => 'Роль пользователя',
-            'unique_name' => 'Уникальное имя'
 
         ];
     }
 
-    /**
-     * Связь с User
-     *
-     */
+//////////////////////////////////////////////////Связь с USER//////////////////////////////////////////////
     public function getUploadUsers()
     {
         return $this->hasOne(\dektrium\user\models\User::className(), ['id' => 'user_id']);
     }
 
-    /**
-     * Выборка за интервал времени
-     *
-     * @param $interval
-     * @param $type
-     * @return int
-     */
+////////////////////////////////////////////////Выборка за интервалы времени////////////////////////////////
     public static function countFilesByPeriodAndType($interval, $type): int
     {
+        // Сумму можно считать сразу со стороны БД с помощью функции COUNT()
         $query = Upload::find()
             ->select('COUNT(`id`)')
             ->where(['type' => $type]);
 
+        // Тут по $interval определяем интервал выборки
         $result = $query->andWhere('date >= DATE_SUB(CURRENT_DATE, INTERVAL ' . $interval . ')')->scalar();
         return empty($result) ? 0 : intval($result);
     }
@@ -112,38 +103,5 @@ class Upload extends \yii\db\ActiveRecord
     public static function getPathToFile(string $name): string
     {
         return $_ENV['DOWNLOAD_PATH'] . $name;
-    }
-
-    /**
-     * Возвращает расширение файла
-     *
-     * @return string
-     * */
-    public function getExtensionFile()
-    {
-        $name = $this->name;
-        $matches = [];
-        preg_match('/.*\.(.*)$/iu', $name, $matches);
-        $extension = $matches[1] ?? '';
-        switch ($extension) {
-            case 'docx':
-                return '/img/docx.png';
-            case 'doc':
-                return '/img/doc.png';
-            case 'pdf':
-                return '/img/pdf.png';
-            case 'xls':
-                return '/img/xls.png';
-            case 'odt':
-                return '/img/odt.png';
-            case 'ods':
-                return '/img/ods.png';
-            case 'odp':
-                return '/img/odp.png';
-            case 'rtf':
-                return '/img/rtf.png';
-            case 'txt':
-                return '/img/txt.png';
-        }
     }
 }

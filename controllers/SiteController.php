@@ -8,11 +8,10 @@ use yii\filters\VerbFilter;
 
 class SiteController extends Controller
 {
-
     /**
-     * @return array[]
+     * {@inheritdoc}
      */
-    public function behaviors(): array
+    public function behaviors()
     {
         return [
             'verbs' => [
@@ -24,11 +23,10 @@ class SiteController extends Controller
         ];
     }
 
-
     /**
-     * @return array
+     * {@inheritdoc}
      */
-    public function actions(): array
+    public function actions()
     {
         return [
             'error' => [
@@ -46,7 +44,7 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex(): string
+    public function actionIndex()
     {
         return $this->render('index');
     }

@@ -2,14 +2,11 @@
 
 namespace app\modules\api\v1\controllers;
 
-use Yii;
 use app\models\Upload;
 use app\modules\api\v1\models\ApiModel;
-use yii\base\InvalidConfigException;
 use yii\db\ActiveRecordInterface;
 use yii\web\NotFoundHttpException;
-use yii\web\UnprocessableEntityHttpException;
-use yii\web\UploadedFile;
+use yii\web\ServerErrorHttpException;
 
 
 class UploadController extends BaseApiController
@@ -17,10 +14,7 @@ class UploadController extends BaseApiController
     public $findModel;
     public $modelClass = ApiModel::class;
 
-    /**
-     * Замена стандартных экшенов на свои.
-     * @return array
-     */
+//////////////////////////////////Замена стандартных экшенов на свои////////////////////////////////
     public function actions()
     {
         $actions = parent::actions();
@@ -30,96 +24,76 @@ class UploadController extends BaseApiController
         return $actions;
     }
 
-    /**
-     * Добавление нового объекта.
-     * @return array
-     * @throws UnprocessableEntityHttpException
-     */
-    public function actionCreate(): array
+//////////////////////////////////Добавление нового объекта////////////////////////////////
+    public function actionCreate()
     {
-        $upload = UploadedFile::getInstanceByName('file');
-        $unique_name = $upload->name . '_' . date('d.m.Y_h:i:s') . '_' . rand(1, 1000);
-        $model = new $this->modelClass;
-        $model->name = $upload->name;
-        $model->unique_name = $unique_name;
-        $model->type = Yii::$app->request->getBodyParam('type');
-        $model->date = date("Y-m-d");
-        $model->size = number_format($upload->size / 1048576, 3) . ' ' . 'MB';
-        if ($model->validate()) {
-            $result = $model->save();
-            if (!$result) {
-                $error = empty($model->getFirstErrors()) ? '' : array_shift($model->getFirstErrors());
-                throw new UnprocessableEntityHttpException(Yii::t('api', 'Error on save entity {error}', ['{error}' => $error]));
-            }
-        $upload->saveAs(Upload::getPathToFile($unique_name));
-        return array(Yii::t('api', 'A new object has been added.'), 'data' => $model);
-        }
-        return array(Yii::t('api', 'No new object has been added.'), 'error' => $model);
-    }
-
-    /**
-     * Изменение существующего объекта
-     * @param $id
-     * @return array
-     * @throws NotFoundHttpException
-     * @throws InvalidConfigException|UnprocessableEntityHttpException
-     */
-
-    public function actionUpdate($id): array
-    {
-        $model = $this->findModel($id);
-        $model->load(Yii::$app->getRequest()->getBodyParams(), '');
-        if ($upload = UploadedFile::getInstanceByName('file')) {
-            $unique_name = $upload->name . '_' . date('d.m.Y_h:i:s') . '_' . rand(1, 1000);
+        $upload = \yii\web\UploadedFile::getInstanceByName('file');
+        if (!empty($upload)) {
+            $upload->saveAs(Upload::getPathToFile($upload));
+            $model = new $this->modelClass;
             $model->name = $upload->name;
-            $model->unique_name = $unique_name;
-            $model->type = Yii::$app->request->getBodyParam('type');
+            $model->type = 0;
             $model->date = date("Y-m-d");
             $model->size = number_format($upload->size / 1048576, 3) . ' ' . 'MB';
-//        if (!file_exists(Upload::getPathToFile($model->unique_name))) {
-//            unlink(Upload::getPathToFile($model->unique_name));
-//        }
-            $upload->saveAs(Upload::getPathToFile($unique_name));
+            $model->save();
+            return array('status' => 'A new object has been added.', 'data' => $model);
         }
-        if ($model->save() === false && !$model->hasErrors()) {
-            $error = empty($model->getFirstErrors()) ? '' : array_shift($model->getFirstErrors());
-            throw new UnprocessableEntityHttpException(Yii::t('api', 'Error on save entity {error}', ['{error}' => $error]));
-        }
-        else {
-            return array(Yii::t('api', 'A new object has been added.'), 'data' => $model);
-        }
+        throw new ServerErrorHttpException('Failed to add object for unknown reason.');
     }
 
-
-    /**
-     * Удаление объекта
-     * @param $id
-     * @return bool
-     * @throws NotFoundHttpException
-     */
-    public function actionDelete($id): bool
+//////////////////////////////////Изменение существующего объекта////////////////////////////////
+    public function actionUpdate($id)
     {
-        $model = $this->findModel($id);
-        if (!file_exists(Upload::getPathToFile($model->unique_name))) {
-            unlink(Upload::getPathToFile($model->unique_name));
+        \Yii::$app->request->getBodyParams();
+        $upload = \yii\web\UploadedFile::getInstanceByName('file');
+        if (!empty($upload)) {
+            $upload->saveAs(Upload::getPathToFile($upload));
+            $model = $this->findModel($id);
+            $model->name = $upload->name;
+            $model->type = 0;
+            $model->date = date("Y-m-d");
+            $model->size = number_format($upload->size / 1048576, 3) . ' ' . 'MB';
+            if (!Upload::getPathToFile($this->findModel($id)->name)) {
+                unlink(Upload::getPathToFile($this->findModel($id)->name));
+            }
+            $model->save();
+            return array('status' => 'A new object has been added.', 'data' => $model);
         }
-        return false !== $model->delete();
+        throw new ServerErrorHttpException('Failed to add object for unknown reason.');
     }
 
+//////////////////////////////////Удаление объекта/////////////////////////////////////////////
+    public function actionDelete($id)
+    {
+        if (!Upload::getPathToFile($this->findModel($id)->name)) {
+            unlink(Upload::getPathToFile($this->findModel($id)->name));
+        }
+        return false !== $this->findModel($id)->delete();
+    }
 
-    /**
-     * Функция поиска объекта.
-     * @param $id
-     * @return false|mixed|ActiveRecordInterface
-     * @throws NotFoundHttpException
-     */
-
-
+///////////////////////////////////Функция поиска объекта//////////////////////////////////////
     public function findModel($id)
     {
-        if (($model = $this->modelClass::findOne($id)) !== null) {
+        if ($this->findModel !== null) {
+            return call_user_func($this->findModel, $id, $this);
+        }
+
+        /* @var $modelClass ActiveRecordInterface */
+        $modelClass = $this->modelClass;
+        $keys = $modelClass::primaryKey();
+        if (count($keys) > 1) {
+            $values = explode(',', $id);
+            if (count($keys) === count($values)) {
+                $model = $modelClass::findOne(array_combine($keys, $values));
+            }
+        } elseif ($id !== null) {
+            $model = $modelClass::findOne($id);
+        }
+
+        if (isset($model)) {
             return $model;
         }
+
         throw new NotFoundHttpException("Object not found: $id");
     }
 }

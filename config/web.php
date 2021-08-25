@@ -98,8 +98,7 @@ $config = [
             'rules' => [
                 [
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => ['upload' => 'api_v1/upload'],
-                    'prefix' => 'api/v1',
+                    'controller' => 'api_v1/upload',
                     'pluralize' => false,
                 ],
             ],
@@ -127,10 +126,7 @@ $config = [
         ],
 
     ],
-    'params' => [
-        'icon-framework' => \kartik\icons\Icon::FAS,
-        $params
-    ],
+    'params' => $params,
 ];
 
 if (YII_ENV_DEV) {

@@ -31,7 +31,7 @@ class UploadCounter extends \yii\base\Model
      *
      * @return int
      */
-    public function getCountTotal(): int
+    public function getCountTotal()
     {
         return $this->countPublic +
             $this->countProtected +

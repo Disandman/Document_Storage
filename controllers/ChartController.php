@@ -16,7 +16,7 @@ class ChartController extends Controller
     /**
      * @inheritDoc
      */
-    public function behaviors(): array
+    public function behaviors()
     {
         return array_merge(
             parent::behaviors(),
@@ -41,7 +41,7 @@ class ChartController extends Controller
     }
 
 
-    public function actionIndex(): string
+    public function actionIndex()
     {
         $model = new Upload();
 
@@ -51,7 +51,7 @@ class ChartController extends Controller
         ]);
     }
 
-    public function actionIndexAlt(): string
+    public function actionIndexAlt()
     {
         $model = new ChartSearch();
         $modelCounter = $model->searchCounter($this->request->queryParams);
