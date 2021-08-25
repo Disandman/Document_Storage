@@ -37,7 +37,7 @@ class ChartSearch extends Upload
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search(array $params): ActiveDataProvider
     {
         $query = Upload::find();
 

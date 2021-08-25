@@ -2,7 +2,6 @@
 
 namespace app\modules\api\v1\controllers;
 
-use yii\filters\VerbFilter;
 use yii\rest\ActiveController;
 
 class BaseApiController extends ActiveController
@@ -15,7 +14,7 @@ class BaseApiController extends ActiveController
         'collectionEnvelope' => 'items',
     ];
 
-    public function checkAccess($action, $model = null, $params = [])
+    public function checkAccess($action, $model = null, $params = []): bool
     {
         return true;
     }
@@ -23,7 +22,7 @@ class BaseApiController extends ActiveController
     /**
      * @return array
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'contentNegotiator' => [
