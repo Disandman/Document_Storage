@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Listen for Xdebug",
+      "pathMappings": {
+        "/app": "Z:\\Work_git\\_\\EFKO-v2.1"
+      },
+      "port": 9005,
+      "request": "launch",
+      "type": "php"
+    }
+  ]
+}

@@ -9,6 +9,7 @@ use yii\data\Pagination;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\web\Response;
 use yii\web\UploadedFile;
 
 
@@ -17,10 +18,11 @@ use yii\web\UploadedFile;
  */
 class UploadController extends Controller
 {
+
     /**
-     * {@inheritdoc}
+     * @return array[]
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'verbs' => [
@@ -33,34 +35,31 @@ class UploadController extends Controller
     }
 
     /**
-     * Lists all Upload models.
-     * @return mixed
+     * Список всех загружаемых моделей.
+     * @return string
      */
-    public function actionIndex()
+    public function actionIndex(): string
     {
         $searchModel = new UploadSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->pagination->pageSize=24;
+        $dataProvider->pagination->pageSize = 24;
         $query = Upload::find();
         $pages = new Pagination(['totalCount' => $query->count()]);
-        $upload = $query->offset($pages->offset)
-            ->limit($pages->limit)
-            ->all();
+        $dataProvider->prepare();
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'pages' => $pages,
-            'upload' =>$upload
+            'pagination' => $pages,
         ]);
     }
 
     /**
-     * Displays a single Upload model.
+     * Отображает одну модель загрузки.
      * @param integer $id
-     * @return mixed
+     * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
+    public function actionView(int $id): string
     {
         return $this->render('view', [
             'model' => $this->findModel($id),
@@ -68,9 +67,9 @@ class UploadController extends Controller
     }
 
     /**
-     * Creates a new Upload model.
+     * Создание файла.
      * If creation is successful, the browser will be redirected to the 'view' page.
-     * @return mixed
+     * @return string|Response
      */
 
     public function actionCreate()
@@ -81,8 +80,10 @@ class UploadController extends Controller
             if ($model->file = UploadedFile::getInstances($model, 'file')) {
                 foreach ($model->file as $file) {
                     $modelMulti = new Upload();
-                    $file->saveAs(Upload::getPathToFile($file));
+                    $unique_name = $file->name . '_' . date('d.m.Y_h:i:s') . '_' . rand(1, 1000);
+                    $file->saveAs(Upload::getPathToFile($unique_name));
                     $modelMulti->name = $file->name;
+                    $modelMulti->unique_name = $unique_name;
                     $modelMulti->type = $model->type;
                     $modelMulti->user_id = Yii::$app->user->id;
                     $modelMulti->date = date("Y-m-d");
@@ -97,31 +98,45 @@ class UploadController extends Controller
         ]);
     }
 
+    /**
+     * Загрузка файла.
+     * @param $id
+     * @return \yii\console\Response|Response
+     * @throws NotFoundHttpException
+     */
     public function actionDownload($id)
     {
         $model = $this->findModel($id);
-        return \Yii::$app->response->sendFile(Upload::getPathToFile($this->findModel($id)->name));
+        return \Yii::$app->response->sendFile(Upload::getPathToFile($model->unique_name));
 
     }
 
     /**
-     * Updates an existing Upload model.
-     * If update is successful, the browser will be redirected to the 'view' page.
-     * @param integer $id
-     * @return mixed
-     * @throws NotFoundHttpException if the model cannot be found
+     * Удаление файла.
+     * @param $id
+     * @return Response
+     * @throws NotFoundHttpException
+     * @throws \Throwable
+     * @throws \yii\db\StaleObjectException
      */
 
-
-    public function actionDelete($id)
+    public function actionDelete($id): Response
     {
         $model = $this->findModel($id);
-        if(!Upload::getPathToFile($this->findModel($id)->name)){
-            unlink(Upload::getPathToFile($this->findModel($id)->name));}
-        $this->findModel($id)->delete();
+        if (!file_exists(Upload::getPathToFile($model->unique_name))) {
+            unlink(Upload::getPathToFile($model->unique_name));
+        }
+        $model->delete();
         return $this->redirect(['index']);
     }
 
+
+    /**
+     * Обновление файла.
+     * @param $id
+     * @return string|Response
+     * @throws NotFoundHttpException
+     */
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
@@ -130,14 +145,17 @@ class UploadController extends Controller
             if ($model->file = UploadedFile::getInstances($model, 'file')) {
                 foreach ($model->file as $file) {
                     $modelMulti = $this->findModel($id);
-                    $file->saveAs(Upload::getPathToFile($file));
+                    $unique_name = $file->name . '_' . date('d.m.Y_h:i:s') . '_' . rand(1, 1000);
+                    $file->saveAs(Upload::getPathToFile($unique_name));
                     $modelMulti->name = $file->name;
+                    $modelMulti->unique_name = $unique_name;
                     $modelMulti->type = $model->type;
                     $modelMulti->user_id = Yii::$app->user->id;
                     $modelMulti->date = date("Y-m-d");
                     $modelMulti->size = number_format($file->size / 1048576, 3) . ' ' . 'MB';
-                    if(!Upload::getPathToFile($this->findModel($id)->name)){
-                        unlink(Upload::getPathToFile($this->findModel($id)->name));}
+                    if (!file_exists(Upload::getPathToFile($model->unique_name))) {
+                        unlink(Upload::getPathToFile($model->unique_name));
+                    }
                     $modelMulti->save();
                 }
             }
@@ -148,7 +166,6 @@ class UploadController extends Controller
         ]);
     }
 
-
     /**
      * Finds the Upload model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
@@ -156,7 +173,7 @@ class UploadController extends Controller
      * @return Upload the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
+    protected function findModel(int $id): Upload
     {
         if (($model = Upload::findOne($id)) !== null) {
             return $model;

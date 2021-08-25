@@ -12,6 +12,10 @@ use app\models\Upload;
 $this->title = 'Файлы';
 $this->params['breadcrumbs'][] = $this->title;
 $model = new \app\models\UploadSearch();
+use kartik\icons\Icon;
+
+Icon::map($this);
+Icon::map($this, Icon::WHHG);
 ?>
 
 <body onload="showLoader()">
@@ -25,20 +29,22 @@ $model = new \app\models\UploadSearch();
                     <h3><?= Html::encode($this->title) ?></h3>
                 </div>
                 <?= \yii\bootstrap4\LinkPager::widget([
-                    'pagination' => $pages,
+                    'pagination' => $dataProvider->pagination, // Вот тут берем пагинацию из провайдера
+                    'hideOnSinglePage' => false // отключаем автоскрытие виджета, если страниц меньше двух
                 ]);
                 ?>
                 <div class="col text-right">
                     <?php if (!Yii::$app->user->isGuest) {
-                        echo Html::a('&#10010;', ['create'], ['class' => 'btn btn-success']);
+                        echo Html::a(Icon::show('plus'), ['create'], ['class' => 'btn btn-outline-success']);
                     } ?>
 
                     <?php
                     \yii\bootstrap4\Modal::begin([
+                        'title' => '<h2>Поиск файлов</h2>',
                         'toggleButton' => [
-                            'label' => '&#128270;',
+                            'label' => Icon::show('search'),
                             'tag' => 'button',
-                            'class' => 'btn btn-success',
+                            'class' => 'btn btn-outline-info',
                         ],
                     ]);
                     ?>

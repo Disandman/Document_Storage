@@ -15,7 +15,7 @@ class UploadSearch extends Upload
 
     public function validateDate($attribute, $param)
     {
-        if (!empty($this->$attribute)) { // проверка на заполнение. Если не заполняли, считаем, что всё ок
+        if (!empty($this->$attribute)) { // Проверка на заполнение. Если не заполняли, считаем, что всё ок
 
             $date = explode(' - ', $this->$attribute); // разбиваем содержимое атрибута
 
@@ -53,7 +53,7 @@ class UploadSearch extends Upload
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
+    public function search(array $params): ActiveDataProvider
     {
         if (!Yii::$app->user->isGuest) {
             if (Yii::$app->user->can('admin')) {
