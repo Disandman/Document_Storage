@@ -8,6 +8,18 @@ use yii\helpers\Url;
 use yii\web\Linkable;
 class ApiModel  extends Upload implements Linkable
 {
+
+    /**
+     * @return array
+     */
+    public function rules()
+    {
+        return [
+            [['type', 'user_id'], 'integer'],
+            [['name', 'size', 'date', 'unique_name'], 'string'],
+            [['file'], 'file', 'extensions' => 'docx, doc, pdf, xls, odt, ods, odp, rtf, txt', 'maxSize' => '20000000']
+        ];
+    }
     /**
      * @return array|false|int[]|string[]
      */

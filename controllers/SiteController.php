@@ -2,9 +2,10 @@
 
 namespace app\controllers;
 
+use app\models\Tech;
 use yii\web\Controller;
 use yii\filters\VerbFilter;
-
+use yii\web\NotFoundHttpException;
 
 class SiteController extends Controller
 {
@@ -49,6 +50,17 @@ class SiteController extends Controller
     public function actionIndex(): string
     {
         return $this->render('index');
+    }
+
+    /**
+     * @throws NotFoundHttpException
+     */
+    public function actionRoutes()
+    {
+        throw new NotFoundHttpException('Страница не найдена.');
+        return $this->render('routes', [
+            'routes' => (new Tech())->getAppRoutes(),
+        ]);
     }
 
 }

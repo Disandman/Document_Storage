@@ -4,10 +4,8 @@
  */
 
 use yii\helpers\Html;
-use kartik\icons\Icon;
+use rmrevin\yii\fontawesome\FAS;
 
-Icon::map($this);
-Icon::map($this, Icon::WHHG);
 ?>
 
 <style>
@@ -33,15 +31,15 @@ Icon::map($this, Icon::WHHG);
                    style="height: 2rem"><?php echo "Тип: " . \app\models\Upload::$typeNames[$model->type] ?></p>
                 <p class="card-text" style="height: 1rem"><?php echo Yii::$app->formatter->asDate($model->date) ?></p>
                 <div class="card-body" style="padding: 6px">
-                    <?php echo Html::a(Icon::show('eye'), ['view', 'id' => $model->id]) ?>
+                    <?php echo Html::a(FAS::i('eye'), ['view', 'id' => $model->id]) ?>
                     <?php if ($model->user_id === Yii::$app->user->id || Yii::$app->user->can("admin")) {
-                        echo Html::a(Icon::show('pencil-alt'), ['update', 'id' => $model->id]);
+                        echo Html::a(FAS::i('pencil-alt'), ['update', 'id' => $model->id]);
                     } ?>
                     <?php if ($model->user_id === Yii::$app->user->id || Yii::$app->user->can("admin")) {
-                        echo Html::a(Icon::show('trash-alt'), ['delete', 'id' => $model->id], ['data' => ['method' => 'post'], 'data-confirm' => Yii::t('backend', 'Точно удалить файл?')]);
+                        echo Html::a(FAS::i('trash-alt'), ['delete', 'id' => $model->id], ['data' => ['method' => 'post'], 'data-confirm' => Yii::t('backend', 'Точно удалить файл?')]);
                     } ?>
                     <?php if ($model->user_id === Yii::$app->user->id || Yii::$app->user->can("admin")) {
-                        echo Html::a(Icon::show('download'), ['upload/download', 'id' => $model->id]);
+                        echo Html::a(FAS::i('download'), ['upload/download', 'id' => $model->id]);
                     } ?>
                 </div>
             </div>

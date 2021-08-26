@@ -1,8 +1,7 @@
 <?php
 
 use yii\helpers\Html;
-use yii\grid\GridView;
-use app\models\Upload;
+use rmrevin\yii\fontawesome\FAS;
 
 /* @var $this yii\web\View */
 /* @var $pages app\controllers\UploadController */
@@ -12,10 +11,7 @@ use app\models\Upload;
 $this->title = 'Файлы';
 $this->params['breadcrumbs'][] = $this->title;
 $model = new \app\models\UploadSearch();
-use kartik\icons\Icon;
 
-Icon::map($this);
-Icon::map($this, Icon::WHHG);
 ?>
 
 <body onload="showLoader()">
@@ -35,14 +31,14 @@ Icon::map($this, Icon::WHHG);
                 ?>
                 <div class="col text-right">
                     <?php if (!Yii::$app->user->isGuest) {
-                        echo Html::a(Icon::show('plus'), ['create'], ['class' => 'btn btn-outline-success']);
+                        echo Html::a(FAS::i('plus'), ['create'], ['class' => 'btn btn-outline-success']);
                     } ?>
 
                     <?php
                     \yii\bootstrap4\Modal::begin([
                         'title' => '<h2>Поиск файлов</h2>',
                         'toggleButton' => [
-                            'label' => Icon::show('search'),
+                            'label' => FAS::i('search'),
                             'tag' => 'button',
                             'class' => 'btn btn-outline-info',
                         ],

@@ -7,7 +7,7 @@
 
 namespace app\assets;
 
-use yii\web\AssetBundle;
+use rmrevin\yii\fontawesome\AssetBundle;
 
 /**
  * Main application asset bundle.
@@ -28,5 +28,6 @@ class AppAsset extends AssetBundle
     public $depends = [
         'yii\web\YiiAsset',
         'yii\bootstrap4\BootstrapAsset',
+        AssetBundle::class,
     ];
 }
