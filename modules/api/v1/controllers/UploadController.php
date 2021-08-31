@@ -6,8 +6,12 @@ use Yii;
 use app\models\Upload;
 use app\modules\api\v1\models\ApiModel;
 use yii\base\InvalidConfigException;
+use yii\db\ActiveRecord;
 use yii\db\ActiveRecordInterface;
+use yii\helpers\Url;
+use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;
+use yii\web\ServerErrorHttpException;
 use yii\web\UnprocessableEntityHttpException;
 use yii\web\UploadedFile;
 
@@ -32,29 +36,100 @@ class UploadController extends BaseApiController
 
     /**
      * Добавление нового объекта.
-     * @return array
+     * 
+     * @return ActiveRecord Созданная модель
      * @throws UnprocessableEntityHttpException
      */
-    public function actionCreate(): array
+    public function actionCreate()
     {
+        // Шаг 1. Создаем новую модель
+        /** @var Upload $model */
         $model = new $this->modelClass;
+        
+        // В некоторых случаях имеет смысл использовать сценарии
+        // С помощью сценариев можно определять надо rules для разных случаев
+        // Подробнее можно почитать тут https://www.yiiframework.com/doc/guide/2.0/ru/structure-models#scenarios
+        // $model->scenario = ApiModel::SCENARIO_CREATE;
+
+        /**
+         * Шаг 2. Загружаем в модель данные, полученные от пользователя. 
+         * Обрати внимание, второй параметр - пустая строка. 
+         * По умолчанию метод load ждёт, что данные для модели будут как "обернуты" в название модели, т.е.
+         *      [
+         *          'Upload' => [
+         *                  'id' => 1,
+         *                  'type' => 0,
+         *                  'name' => 'test'
+         *           ]
+         *      ]
+         * В нащем же случае мы передаем запрос без этой обертки:
+         *      [
+         *          'id' => 1,
+         *          'type' => 0,
+         *          'name' => 'test'
+         *      ]
+         */
+        $model->load($this->request->getBodyParams(), '');
         $model->file = UploadedFile::getInstanceByName('file');
-        $unique_name = $model->file->name . '_' . date('d.m.Y_h:i:s') . '_' . rand(1, 1000);
-        $model->name = $model->file->name;
-        $model->unique_name = $unique_name;
-        $model->type = Yii::$app->request->getBodyParam('type');
-        $model->date = date("Y-m-d");
-        $model->size = number_format($model->file->size / 1048576, 3) . ' ' . 'MB';
-        if ($model->validate()) {
-            $result = $model->save();
-            if (!$result) {
-                $error = empty($model->getFirstErrors()) ? '' : array_shift($model->getFirstErrors());
-                throw new UnprocessableEntityHttpException(Yii::t('api', 'Error on save entity {error}', ['{error}' => $error]));
-            }
-            $model->file->saveAs(Upload::getPathToFile($unique_name));
-            return array(Yii::t('api', 'A new object has been added.'), 'data' => $model);
+
+        /**
+         * Шаг 3. Проверяем наличие файла. Если его нет - выкидываем исключение
+         */
+        if(!$model->file) {
+            throw new BadRequestHttpException(Yii::t('app', 'File attachment is required!'));
         }
-        return array(Yii::t('api', 'No new object has been added.'), 'error' => $model);
+
+
+        // Правило именования - camelCase. 
+        // Underscope обычно в php сообществе не принято использовать, за некоторыми исключениями
+        $uniqueName = $model->file->name . '_' . date('d.m.Y_h:i:s') . '_' . rand(1, 1000);
+
+        // По хорошему стоило бы uniqueName и расчет размера вынести в методы класса
+        $model->size = number_format($model->file->size / 1048576, 3) . ' ' . 'MB';
+        $model->unique_name = $uniqueName;
+        $model->name = $model->file->name;
+        $model->date = date("Y-m-d");
+
+        /**
+         * Шаг 4. Валидируем и сохраняем
+         * 
+         * Валидация здесь внутри метода save(). Перед тем, как выполнить сохранение в БД, 
+         * Yii делает проверку на соответствие данных заданным rules.
+         * 
+         * Здесь я также добавила такую вещь, как транзакции.
+         * Транзакция отвечает за целостность данных в БД. Если в процессе выполнения действий
+         * в блоке транзации происходит ошибка, изменения из этого блока, внесенные в БД
+         * ранее будут откачены назад.
+         * Например, не получилось записать файл на диск. Тогда мы откатим
+         * запись в БД и выкинем пользователю сообщение. И в базе не будет "огрызков".
+         */
+        $transaction = $model::getDb()->beginTransaction(); // начало транзакции
+
+        if($model->save()) {
+            if($model->file->saveAs($model::getPathToFile($uniqueName))) {
+                $transaction->commit(); // транзакция успешно выполнена
+
+                $this->response->setStatusCode(201);
+                return $model;
+            } else {
+                $transaction->rollBack(); // при ошибке откатили изменения
+
+                throw new ServerErrorHttpException(Yii::t('app', 'Failed to save file on disk'));
+            }
+        } 
+
+        $transaction->rollBack(); // при ошибке откатили изменения
+
+        /**
+         * Шаг 5. Если что-то пошло не так, мы должны об этом сказать пользователю
+         * Если это ошибка не связанная с валидацией - выкинем общую ошибку
+         * Иначе Yii сама составит список ошибок для пользователя
+         */
+        if(!$model->hasErrors()) {
+            throw new ServerErrorHttpException(Yii::t('app', 'Failed to save object'));
+        }
+
+        return $model;
     }
 
     /**
@@ -97,17 +172,24 @@ class UploadController extends BaseApiController
 
     /**
      * Удаление объекта
-     * @param $id
-     * @return bool
-     * @throws NotFoundHttpException
+     * 
+     * @param $id ID объекта
+     * @return void
+     * @throws \Exception
      */
-    public function actionDelete($id): bool
+    public function actionDelete($id): void
     {
         $model = $this->findModel($id);
-        if (!file_exists(Upload::getPathToFile($model->unique_name))) {
+
+        if (file_exists(Upload::getPathToFile($model->unique_name))) {
             unlink(Upload::getPathToFile($model->unique_name));
         }
-        return false !== $model->delete();
+
+        if(false === $model->delete()) {
+            throw new ServerErrorHttpException(Yii::t('app','Failed to delete the entity'));
+        }
+
+        $this->response->setStatusCode(204);
     }
 
     /**

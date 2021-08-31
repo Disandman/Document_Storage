@@ -15,11 +15,14 @@ class ApiModel  extends Upload implements Linkable
     public function rules()
     {
         return [
+            [['type'], 'required'],
             [['type', 'user_id'], 'integer'],
             [['name', 'size', 'date', 'unique_name'], 'string'],
-            [['file'], 'file', 'extensions' => 'docx, doc, pdf, xls, odt, ods, odp, rtf, txt', 'maxSize' => '20000000']
+            [['file'], 'file', 'extensions' => 'docx, doc, pdf, xls, xlsx, odt, ods, odp, rtf, txt', 'maxSize' => '20000000']
         ];
     }
+
+    
     /**
      * @return array|false|int[]|string[]
      */
