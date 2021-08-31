@@ -2,6 +2,7 @@ include .env
 
 install: docker-down-clear pre-install docker-up
 up: docker-up
+down: docker-down
 
 docker-down-clear:
 	@docker-compose down -v --remove-orphans
