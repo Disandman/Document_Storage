@@ -2,12 +2,15 @@
 
 namespace app\modules\api\v1\controllers;
 
+use app\modules\api\v1\models\UploadModelSearch;
 use Yii;
 use app\models\Upload;
-use app\modules\api\v1\models\ApiModel;
+use app\modules\api\v1\models\UploadModel;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveRecordInterface;
+use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;
+use yii\web\ServerErrorHttpException;
 use yii\web\UnprocessableEntityHttpException;
 use yii\web\UploadedFile;
 
@@ -15,7 +18,7 @@ use yii\web\UploadedFile;
 class UploadController extends BaseApiController
 {
     public $findModel;
-    public $modelClass = ApiModel::class;
+    public $modelClass = UploadModel::class;
 
     /**
      * Замена стандартных экшенов на свои.
@@ -24,6 +27,14 @@ class UploadController extends BaseApiController
     public function actions()
     {
         $actions = parent::actions();
+        $actions['index'] = [
+            'class' => 'yii\rest\IndexAction',
+            'modelClass' => $this->modelClass,
+            'prepareDataProvider' => function () {
+                $searchModel = new UploadModelSearch();
+                return $searchModel->search(Yii::$app->request->queryParams);
+            },
+        ];
         unset($actions['create']);
         unset($actions['update']);
         unset($actions['delete']);
@@ -35,27 +46,41 @@ class UploadController extends BaseApiController
      * @return array
      * @throws UnprocessableEntityHttpException
      */
-    public function actionCreate(): array
+    public function actionCreate()
     {
         $model = new $this->modelClass;
+        $model->load($this->request->getBodyParams(), '');
         $model->file = UploadedFile::getInstanceByName('file');
-        $unique_name = $model->file->name . '_' . date('d.m.Y_h:i:s') . '_' . rand(1, 1000);
-        $model->name = $model->file->name;
-        $model->unique_name = $unique_name;
-        $model->type = Yii::$app->request->getBodyParam('type');
-        $model->date = date("Y-m-d");
-        $model->size = number_format($model->file->size / 1048576, 3) . ' ' . 'MB';
-        if ($model->validate()) {
-            $result = $model->save();
-            if (!$result) {
-                $error = empty($model->getFirstErrors()) ? '' : array_shift($model->getFirstErrors());
-                throw new UnprocessableEntityHttpException(Yii::t('api', 'Error on save entity {error}', ['{error}' => $error]));
-            }
-            $model->file->saveAs(Upload::getPathToFile($unique_name));
-            return array(Yii::t('api', 'A new object has been added.'), 'data' => $model);
+        if(!$model->file) {
+            throw new BadRequestHttpException(Yii::t('app', 'File attachment is required!'));
         }
-        return array(Yii::t('api', 'No new object has been added.'), 'error' => $model);
+        $model->size = $model->getFileSize();
+        $model->unique_name = $model->getUniqueName();
+        $model->name = $model->file->name;
+        $model->date = date("Y-m-d");
+        $transaction = $model::getDb()->beginTransaction(); // начало транзакции
+        if($model->save()) {
+            if($model->file->saveAs($model::getPathToFile($model->getUniqueName()))) {
+                $transaction->commit(); // транзакция успешно выполнена
+                $this->response->setStatusCode(201);
+                return $model;
+            } else {
+                $transaction->rollBack(); // при ошибке откатили изменения
+                throw new ServerErrorHttpException(Yii::t('app', 'Failed to save file on disk'));
+            }
+        }
+
+        $transaction->rollBack(); // при ошибке откатили изменения
+
+        if(!$model->hasErrors()) {
+            throw new ServerErrorHttpException(Yii::t('app', 'Failed to save object'));
+        }
+
+        return $model;
     }
+
+
+
 
     /**
      * Изменение существующего объекта
@@ -65,34 +90,40 @@ class UploadController extends BaseApiController
      * @throws InvalidConfigException|UnprocessableEntityHttpException
      */
 
-    public function actionUpdate($id): array
+    public function actionUpdate($id)
     {
         $model = $this->findModel($id);
-        $model->load(Yii::$app->getRequest()->getBodyParams(), '');
+        $model->load($this->request->getBodyParams(), '');
         $model->file = UploadedFile::getInstanceByName('file');
-        if ($model->validate()) {
-            if ($model->file) {
-
-                $unique_name = $model->file->name . '_' . date('d.m.Y_h:i:s') . '_' . rand(1, 1000);
-                $model->name = $model->file->name;
-                $model->unique_name = $unique_name;
-                $model->type = Yii::$app->request->getBodyParam('type');
-                $model->date = date("Y-m-d");
-                $model->size = number_format($model->file->size / 1048576, 3) . ' ' . 'MB';
-
-            if (!file_exists(Upload::getPathToFile($model->unique_name))) {
+        if (!$model->file) {
+            throw new BadRequestHttpException(Yii::t('app', 'File attachment is required!'));
+        }
+        $model->size = $model->getFileSize();
+        $model->unique_name = $model->getUniqueName();
+        $model->name = $model->file->name;
+        $model->date = date("Y-m-d");
+        $transaction = $model::getDb()->beginTransaction(); // начало транзакции
+        if ($model->save()) {
+            if (file_exists(Upload::getPathToFile($model->unique_name))) {
                 unlink(Upload::getPathToFile($model->unique_name));
             }
-                $model->file->saveAs(Upload::getPathToFile($unique_name));
-            }
-            if ($model->save(false) === false && !$model->hasErrors()) {
-                $error = empty($model->getFirstErrors()) ? '' : array_shift($model->getFirstErrors());
-                throw new UnprocessableEntityHttpException(Yii::t('api', 'Error on save entity {error}', ['{error}' => $error]));
+            if ($model->file->saveAs($model::getPathToFile($model->getUniqueName()))) {
+                $transaction->commit(); // транзакция успешно выполнена
+                $this->response->setStatusCode(201);
+                return $model;
             } else {
-                return array(Yii::t('api', 'A new object has been added.'), 'data' => $model);
+                $transaction->rollBack(); // при ошибке откатили изменения
+                throw new ServerErrorHttpException(Yii::t('app', 'Failed to save file on disk'));
             }
         }
-        return array(Yii::t('api', 'No new object has been added.'), 'error' => $model);
+
+        $transaction->rollBack(); // при ошибке откатили изменения
+
+        if (!$model->hasErrors()) {
+            throw new ServerErrorHttpException(Yii::t('app', 'Failed to save object'));
+        }
+
+        return $model;
     }
 
     /**
@@ -101,13 +132,18 @@ class UploadController extends BaseApiController
      * @return bool
      * @throws NotFoundHttpException
      */
-    public function actionDelete($id): bool
+    public function actionDelete($id): void
     {
         $model = $this->findModel($id);
-        if (!file_exists(Upload::getPathToFile($model->unique_name))) {
+        if (file_exists(Upload::getPathToFile($model->unique_name))) {
             unlink(Upload::getPathToFile($model->unique_name));
         }
-        return false !== $model->delete();
+
+        if(false === $model->delete()) {
+            throw new ServerErrorHttpException(Yii::t('app','Failed to delete the entity'));
+        }
+
+        $this->response->setStatusCode(204);
     }
 
     /**
@@ -121,9 +157,7 @@ class UploadController extends BaseApiController
     {
         $modelClass = $this->modelClass;
         if (($model = $modelClass::findOne($id)) !== null) {
-            if (isset($model)) {
                 return $model;
-            }
         }
         throw new NotFoundHttpException("Object not found: $id");
     }

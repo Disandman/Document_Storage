@@ -8,21 +8,10 @@ use rmrevin\yii\fontawesome\FAS;
 
 ?>
 
-<style>
-    .one_third {
-        float: left;
-        min-width: 11rem;
-    }
-
-    .wrapper {
-        min-width: 11rem;
-    }
-</style>
-
 <div class="wrapper">
     <?php for ($i = 0; $i < 1; $i++) { ?>
     <div class="one_third">
-        <div class="card mb-3" style="width: 10rem;">
+        <div class="card mb-3 " style="width: 10rem;">
             <img class="card-img-top" src="<?php echo $model->getExtensionFile()?>">
             <div class="card-body" style="padding: 4px">
                 <h5 class="card-title" style="height: 5.5rem">
@@ -36,7 +25,7 @@ use rmrevin\yii\fontawesome\FAS;
                         echo Html::a(FAS::i('pencil-alt'), ['update', 'id' => $model->id]);
                     } ?>
                     <?php if ($model->user_id === Yii::$app->user->id || Yii::$app->user->can("admin")) {
-                        echo Html::a(FAS::i('trash-alt'), ['delete', 'id' => $model->id], ['data' => ['method' => 'post'], 'data-confirm' => Yii::t('backend', 'Точно удалить файл?')]);
+                        echo Html::a(FAS::i('trash-alt'), ['delete', 'id' => $model->id], [ 'data-confirm' => Yii::t('backend', 'Точно удалить файл?')]);
                     } ?>
                     <?php if ($model->user_id === Yii::$app->user->id || Yii::$app->user->can("admin")) {
                         echo Html::a(FAS::i('download'), ['upload/download', 'id' => $model->id]);

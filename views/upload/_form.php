@@ -22,10 +22,6 @@ use app\models\Upload;
         'options' => ['multiple' => true,]
     ]); ?>
 
-    <div class="form-group">
-        <?= Html::submitButton('Сохранить', ['class' => 'btn btn-success']) ?>
-    </div>
-
     <?php ActiveForm::end(); ?>
 
 </div>

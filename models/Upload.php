@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use function GuzzleHttp\Psr7\str;
+
 /**
  * This is the model class for table "upload".
  *
@@ -53,7 +55,7 @@ class Upload extends \yii\db\ActiveRecord
         return [
             [['type', 'user_id'], 'integer'],
             [['name', 'size', 'date', 'unique_name'], 'string'],
-            [['file'], 'file', 'maxFiles' => 20, 'extensions' => 'docx, doc, pdf, xls, odt, ods, odp, rtf, txt', 'maxSize' => '20000000']
+            [['file'], 'file', 'maxFiles' => 20, 'extensions' => 'docx, doc, pdf, xls, odt, ods, odp, rtf, txt ', 'maxSize' => '20000000']
         ];
     }
 
@@ -119,7 +121,7 @@ class Upload extends \yii\db\ActiveRecord
      *
      * @return string
      * */
-    public function getExtensionFile()
+    public function getExtensionFile(): string
     {
         $name = $this->name;
         $matches = [];
@@ -146,4 +148,24 @@ class Upload extends \yii\db\ActiveRecord
                 return '/img/txt.png';
         }
     }
+
+
+    /**
+     * Генерация уникального имени
+     * @return string
+     */
+    public function getUniqueName()
+    {
+        return  uniqid() .'.'. $this->file->getExtension();
+    }
+
+    /**
+     * Размер файла
+     * @return string
+     */
+    public function getFileSize()
+    {
+       return number_format($this->file->size / 1048576, 3) . ' ' . 'MB';
+    }
+
 }

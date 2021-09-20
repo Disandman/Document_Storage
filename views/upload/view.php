@@ -54,7 +54,6 @@ $this->params['breadcrumbs'][] = $this->title;
             'class' => 'btn btn-danger btn-block',
             'data' => [
                 'confirm' => 'Точно удалить файл?',
-                'method' => 'post',
             ],
         ]);
     } ?>

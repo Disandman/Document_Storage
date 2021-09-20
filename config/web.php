@@ -40,8 +40,7 @@ $config = [
             'class' => 'yii\caching\FileCache',
         ],
         'user' => [
-            'identityClass' => '\dektrium\user\models\User',
-            'enableAutoLogin' => true,
+            'identityClass' => 'app\components\models\User',
         ],
         'as access' => [
             'class' => \dektrium\user\filters\AccessRule::className(),
@@ -96,6 +95,12 @@ $config = [
             'enableStrictParsing' => false,
             'showScriptName' => false,
             'rules' => [
+                [
+                    'class' => 'yii\rest\UrlRule',
+                    'controller' => ['user' => 'api_v1/user'],
+                    'prefix' => 'api/v1',
+                    'pluralize' => false,
+                ],
                 [
                     'class' => 'yii\rest\UrlRule',
                     'controller' => ['upload' => 'api_v1/upload'],

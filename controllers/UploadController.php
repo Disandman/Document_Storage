@@ -18,22 +18,6 @@ use yii\web\UploadedFile;
  */
 class UploadController extends Controller
 {
-
-    /**
-     * @return array[]
-     */
-    public function behaviors(): array
-    {
-        return [
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'delete' => ['POST'],
-                ],
-            ],
-        ];
-    }
-
     /**
      * Список всех загружаемых моделей.
      * @return string
@@ -43,13 +27,10 @@ class UploadController extends Controller
         $searchModel = new UploadSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->pagination->pageSize = 24;
-        $query = Upload::find();
-        $pages = new Pagination(['totalCount' => $query->count()]);
         $dataProvider->prepare();
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,
-            'pagination' => $pages,
         ]);
     }
 
@@ -80,7 +61,7 @@ class UploadController extends Controller
             if ($model->file = UploadedFile::getInstances($model, 'file')) {
                 foreach ($model->file as $file) {
                     $modelMulti = new Upload();
-                    $unique_name = $file->name . '_' . date('d.m.Y_h:i:s') . '_' . rand(1, 1000);
+                    $unique_name = uniqid() .'.'. $file->getExtension();
                     $file->saveAs(Upload::getPathToFile($unique_name));
                     $modelMulti->name = $file->name;
                     $modelMulti->unique_name = $unique_name;
@@ -123,7 +104,7 @@ class UploadController extends Controller
     public function actionDelete($id): Response
     {
         $model = $this->findModel($id);
-        if (!file_exists(Upload::getPathToFile($model->unique_name))) {
+        if (file_exists(Upload::getPathToFile($model->unique_name))) {
             unlink(Upload::getPathToFile($model->unique_name));
         }
         $model->delete();
@@ -145,7 +126,7 @@ class UploadController extends Controller
             if ($model->file = UploadedFile::getInstances($model, 'file')) {
                 foreach ($model->file as $file) {
                     $modelMulti = $this->findModel($id);
-                    $unique_name = $file->name . '_' . date('d.m.Y_h:i:s') . '_' . rand(1, 1000);
+                    $unique_name = uniqid() .'.'. $file->getExtension();
                     $file->saveAs(Upload::getPathToFile($unique_name));
                     $modelMulti->name = $file->name;
                     $modelMulti->unique_name = $unique_name;
@@ -153,7 +134,7 @@ class UploadController extends Controller
                     $modelMulti->user_id = Yii::$app->user->id;
                     $modelMulti->date = date("Y-m-d");
                     $modelMulti->size = number_format($file->size / 1048576, 3) . ' ' . 'MB';
-                    if (!file_exists(Upload::getPathToFile($model->unique_name))) {
+                    if (file_exists(Upload::getPathToFile($model->unique_name))) {
                         unlink(Upload::getPathToFile($model->unique_name));
                     }
                     $modelMulti->save();
