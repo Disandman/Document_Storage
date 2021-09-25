@@ -2,7 +2,7 @@
 
 namespace app\models;
 
-use function GuzzleHttp\Psr7\str;
+use function GuzzleHttp\Psr7\str; // какой-то аппендикс?
 
 /**
  * This is the model class for table "upload".
