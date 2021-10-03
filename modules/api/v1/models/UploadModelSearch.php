@@ -25,8 +25,12 @@ class UploadModelSearch extends UploadModel
             }
         }
 
-            $query = UploadModel::find()
-                ->where(['type' => 0 || 1]);
+        $query = UploadModel::find()
+            ->where([
+                'OR',
+                ['=', 'type', 0],
+                ['=', 'type', 1],
+            ]);
 
         if (!empty($filter)) {
             $query->andWhere($filter); // Если фильтр не пустой, мы применяем его к запросу базы данных для UploadModel

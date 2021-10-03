@@ -97,13 +97,10 @@ $config = [
             'rules' => [
                 [
                     'class' => 'yii\rest\UrlRule',
-                    'controller' => ['user' => 'api_v1/user'],
-                    'prefix' => 'api/v1',
-                    'pluralize' => false,
-                ],
-                [
-                    'class' => 'yii\rest\UrlRule',
-                    'controller' => ['upload' => 'api_v1/upload'],
+                    'controller' => [
+                        'user' => 'api_v1/user',
+                        'upload' => 'api_v1/upload',
+                        'auth' => 'api_v1/auth'],
                     'prefix' => 'api/v1',
                     'pluralize' => false,
                 ],

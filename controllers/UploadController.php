@@ -5,10 +5,8 @@ namespace app\controllers;
 use Yii;
 use app\models\Upload;
 use app\models\UploadSearch;
-use yii\data\Pagination;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use yii\filters\VerbFilter;
 use yii\web\Response;
 use yii\web\UploadedFile;
 
@@ -57,11 +55,12 @@ class UploadController extends Controller
     {
         $model = new Upload();
 
+
         if ($model->load(Yii::$app->request->post())) {
             if ($model->file = UploadedFile::getInstances($model, 'file')) {
                 foreach ($model->file as $file) {
                     $modelMulti = new Upload();
-                    $unique_name = uniqid() .'.'. $file->getExtension();
+                    $unique_name = $model->getUniqueName();
                     $file->saveAs(Upload::getPathToFile($unique_name));
                     $modelMulti->name = $file->name;
                     $modelMulti->unique_name = $unique_name;
@@ -126,7 +125,7 @@ class UploadController extends Controller
             if ($model->file = UploadedFile::getInstances($model, 'file')) {
                 foreach ($model->file as $file) {
                     $modelMulti = $this->findModel($id);
-                    $unique_name = uniqid() .'.'. $file->getExtension();
+                    $unique_name = $model->getUniqueName();
                     $file->saveAs(Upload::getPathToFile($unique_name));
                     $modelMulti->name = $file->name;
                     $modelMulti->unique_name = $unique_name;

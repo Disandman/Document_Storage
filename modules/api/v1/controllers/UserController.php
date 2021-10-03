@@ -4,9 +4,12 @@ namespace app\modules\api\v1\controllers;
 
 
 
+use dektrium\user\models\Profile;
+use dektrium\user\models\Token;
 use Yii;
 use app\modules\api\v1\models\UserModel;
 use dektrium\user\models\User;
+use yii\db\Expression;
 use yii\web\NotFoundHttpException;
 use yii\web\ServerErrorHttpException;
 
@@ -28,12 +31,17 @@ class UserController extends BaseApiController
     public function actionCreate()
     {
         $model = new User();
+        $token = new Token();
         $model->load($this->request->getBodyParams(), '');
-        $password = $this->request->getBodyParam('password_hash');
+        $password = $this->request->getBodyParam('password');
         $model->password_hash = \Yii::$app->security->generatePasswordHash($password, \Yii::$app->getModule('user')->cost);
         $transaction = $model::getDb()->beginTransaction(); // начало транзакции
-
         if ($model->save()) {
+            $token->user_id = $model->id;
+            $token->code = Yii::$app->security->generateRandomString();
+            $token->created_at = time();
+            $token->type = '0';
+            $token->save();
             $transaction->commit(); // транзакция успешно выполнена
             $this->response->setStatusCode(201);
             return $model;
@@ -41,14 +49,17 @@ class UserController extends BaseApiController
             $transaction->rollBack(); // при ошибке откатили изменения
             throw new ServerErrorHttpException(\Yii::t('app', "Couldn't add user"));
         }
+
     }
 
     public function actionUpdate($id)
     {
         $model = $this->findModel($id);
         $model->load($this->request->getBodyParams(), '');
-        $password = $this->request->getBodyParam('password_hash');
-        $model->password_hash = \Yii::$app->security->generatePasswordHash($password, \Yii::$app->getModule('user')->cost);
+        $password = $this->request->getBodyParam('password');
+        if (isset($password)){
+            throw new ServerErrorHttpException(\Yii::t('app', "The password is changed only in the personal account."));
+        };
         $transaction = $model::getDb()->beginTransaction(); // начало транзакции
 
         if ($model->save()) {
@@ -59,18 +70,6 @@ class UserController extends BaseApiController
             $transaction->rollBack(); // при ошибке откатили изменения
             throw new ServerErrorHttpException(\Yii::t('app', "Couldn't add user"));
         }
-    }
-
-
-    public function actionDelete($id): void
-    {
-        $model = $this->findModel($id);
-
-        if(false === $model->delete()) {
-            throw new ServerErrorHttpException(Yii::t('app','Failed to delete the entity'));
-        }
-
-        $this->response->setStatusCode(204);
     }
 
     public function findModel($id)
