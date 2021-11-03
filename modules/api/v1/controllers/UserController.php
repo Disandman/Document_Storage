@@ -58,7 +58,7 @@ class UserController extends BaseApiController
         $model->load($this->request->getBodyParams(), '');
         $password = $this->request->getBodyParam('password');
         if (isset($password)){
-            throw new ServerErrorHttpException(\Yii::t('app', "The password is changed only in the personal account."));
+            throw new ServerErrorHttpException(\Yii::t('app', "The password can be changed in the user account only."));
         };
         $transaction = $model::getDb()->beginTransaction(); // начало транзакции
 

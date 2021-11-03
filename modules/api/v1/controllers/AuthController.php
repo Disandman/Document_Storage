@@ -43,7 +43,8 @@ class AuthController extends ActiveController
     public function auth($username, $password)
     {
         $user = User::findOne(['username' => $username]);
-        return $username === null || Password::validate($password, $user->password_hash) ? $user : null;
+        if(!$user) return null;
+        return Password::validate($password, $user->password_hash) ? $user : null;
 
     }
 
@@ -51,7 +52,8 @@ class AuthController extends ActiveController
     {
         $token = Yii::$app->security->generateRandomString();
         $model = $this->findModel(Yii::$app->user->id);
-        $model->created_at = strtotime('+3 hours');
+        $model->created_at = time();
+        $model->expired_at = strtotime('+3 hours');
         $model->code = $token;
         $model->save();
         return $token;

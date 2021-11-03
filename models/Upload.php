@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use yii\helpers\ArrayHelper;
+
 /**
  * This is the model class for table "upload".
  *
@@ -149,23 +151,14 @@ class Upload extends \yii\db\ActiveRecord
         }
     }
 
-
     /**
      * Генерация уникального имени
      * @return string || array
      */
     public function generateUniqueName()
     {
-        if (is_array($this->file)) {
-
-            foreach ($this->file as $file) $uniquename = uniqid() . '.' . $file->getExtension();
-        } else {
-            $uniquename = uniqid() . '.' . $this->file->getExtension();
-        }
-
-        return $uniquename;
+            return uniqid() . '.' . $this->file->getExtension();
     }
-
 
     /**
      * Проверка данных в атрибуте `unique_name`

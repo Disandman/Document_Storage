@@ -53,8 +53,13 @@ $this->title = 'Требования';
                 <li class="list-group-item">&#9675; Написание простых unit или acceptance тестов.</li>
             </ul>
             <ul class="list-group list-group-flush text-left">
-                <li class="list-group-item">&#9675; Дополнительно реализовано Rest API. Точка входа-> <a
+                <li class="list-group-item">&#9675; Дополнительно реализовано Rest API.</li>
+                <li class="list-group-item">	&#160;	&#160;&#8211; Точка входа для получения Token-> <a
+                            href="https://projectsil.ru/api/v1/auth">https://projectsil.ru/api/v1/auth</a></li>
+                <li class="list-group-item">	&#160;	&#160;&#8211; Точка входа для Файлов-> <a
                             href="https://projectsil.ru/api/v1/upload">https://projectsil.ru/api/v1/upload</a></li>
+                <li class="list-group-item">	&#160;	&#160;&#8211; Точка входа для Пользователей-> <a
+                            href="https://projectsil.ru/api/v1/user">https://projectsil.ru/api/v1/user</a></li>
             </ul>
             <ul class="list-group list-group-flush text-left">
                 <li class="list-group-item">&#9675; Дополнительно реализована регистрация через свой почтовый сервер. <a

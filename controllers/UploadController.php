@@ -60,7 +60,7 @@ class UploadController extends Controller
             if ($model->file = UploadedFile::getInstances($model, 'file')) {
                 foreach ($model->file as $file) {
                     $modelMulti = new Upload();
-                    $unique_name = $model->getUniqueName();
+                    $unique_name = uniqid() . '.' . $file->getExtension();
                     $file->saveAs(Upload::getPathToFile($unique_name));
                     $modelMulti->name = $file->name;
                     $modelMulti->unique_name = $unique_name;
@@ -125,7 +125,7 @@ class UploadController extends Controller
             if ($model->file = UploadedFile::getInstances($model, 'file')) {
                 foreach ($model->file as $file) {
                     $modelMulti = $this->findModel($id);
-                    $unique_name = $model->getUniqueName();
+                    $unique_name = uniqid() . '.' . $file->getExtension();
                     $file->saveAs(Upload::getPathToFile($unique_name));
                     $modelMulti->name = $file->name;
                     $modelMulti->unique_name = $unique_name;

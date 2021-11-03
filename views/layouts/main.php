@@ -44,7 +44,7 @@ AppAsset::register($this);
             ['label' => 'Файлы', 'url' => ['/upload/index']],
             [
                 'label' => 'Пользователи', 'url' => ['/user/admin'],
-
+                'visible' => Yii::$app->user->can('admin'),
                 'active' => Yii::$app->controller->id === 'admin',
             ],
             Yii::$app->user->isGuest ?

@@ -3,6 +3,7 @@
  * @var $model app\models\Upload
  */
 
+use app\models\Upload;
 use yii\helpers\Html;
 use rmrevin\yii\fontawesome\FAS;
 
@@ -17,7 +18,7 @@ use rmrevin\yii\fontawesome\FAS;
                 <h5 class="card-title" style="height: 5.5rem">
                     <b><?php echo \yii\helpers\StringHelper::truncate($model->name, 34, '...'); ?></b></h5>
                 <p class="card-text"
-                   style="height: 2rem"><?php echo "Тип: " . \app\models\Upload::$typeNames[$model->type] ?></p>
+                   style="height: 2rem"><?php echo "Тип: " . Upload::$typeNames[$model->type] ?></p>
                 <p class="card-text" style="height: 1rem"><?php echo Yii::$app->formatter->asDate($model->date) ?></p>
                 <div class="card-body" style="padding: 6px">
                     <?php echo Html::a(FAS::i('eye'), ['view', 'id' => $model->id]) ?>
