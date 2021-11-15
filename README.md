@@ -2,7 +2,7 @@
     <a href="https://github.com/yiisoft" target="_blank">
         <img src="https://avatars0.githubusercontent.com/u/993323" height="100px">
     </a>
-    <h1 align="center">Приложение для хранения документов на PHP (https://projectsil.ru)</h1>
+    <h1 align="center">Приложение для хранения документов на PHP</h1>
     <h3 align="center">Необходимо разработать приложение, которое позволит организовывать хранение документов с различными разрешениями.</h3>
 </p>
 
